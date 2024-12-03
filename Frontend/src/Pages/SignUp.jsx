@@ -1,13 +1,15 @@
 import { useState } from "react";
 import axios from 'axios'
+import { Navigate } from "react-router-dom";
 
-function SignUp() {
+function SignUp({token}) {
   const [userData, setUserData] = useState({
     userName: "",
     email: "",
     password: "",
   });
 
+  const [pathchange,setpathchange] = useState(false)
 
 
   const onchangeHandler = (e) => {
@@ -20,9 +22,10 @@ function SignUp() {
 
     await axios.post('http://localhost:3000/api/v1/user',userData).then((res)=>{
 
+      
+      localStorage.setItem("token",JSON.stringify(res.data.token))
       alert(res.data.message)
-
-      localStorage.setItem("user",JSON.stringify(res.data.token))
+      setpathchange(res.data.success)
     }).catch((error)=>{
 
       alert(error.response.data.message)
@@ -32,7 +35,15 @@ function SignUp() {
     
   };
 
+  if(token){
+    return   <Navigate to="/logout" replace={true} />
+  }
 
+  if(pathchange){
+  
+    return   <Navigate to="/" replace={true} />
+
+  }
   return (
     <div className="flex items-center justify-center ">
       <div className=" mt-10">

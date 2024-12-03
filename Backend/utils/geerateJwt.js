@@ -16,8 +16,9 @@ import jwt from 'jsonwebtoken'
 
 const verifyJWT = async (token) => {
     try {
-    await jwt.verify(token,"secreatKey")
-        return true
+    const user =  await jwt.verify(token,"secreatKey")
+  
+        return user
     } catch (error) {
 
         return false
@@ -27,13 +28,18 @@ const verifyJWT = async (token) => {
 
 const decodeJwt = async (token) => {
     try {
-
-      const decode = await jwt.decode(token)
         
+        const decode = await jwt.decode(token)
+    
+        return decode
     } catch (error) {
+
+        return false
         
     }
+
+
 }
 
 
-export {generateJwtToken,verifyJWT}
+export {generateJwtToken,verifyJWT,decodeJwt}

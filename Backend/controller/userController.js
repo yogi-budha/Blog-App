@@ -87,9 +87,11 @@ const login = async (req,res) =>{
        if(!pass){
         return res.status(400).json({success:false,message:"Password Incorrect"})
        }
+
+      const token = await generateJwtToken({email:existingUser.email,id:existingUser._id})
         res.status(200).json({success:true,message:"Login successfully",user:{
             ...existingUser._doc,password:undefined
-        }})
+        },token})
 
     } catch (error) {
 

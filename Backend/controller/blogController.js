@@ -1,44 +1,36 @@
 import { Blog } from "../models/blogModel.js"
 import { User } from "../models/userModel.js"
-import {  verifyJWT } from "../utils/geerateJwt.js"
+import {  decodeJwt, verifyJWT } from "../utils/geerateJwt.js"
 
 
 const createBlog = async (req,res)=>{
     try {
 
-        const {token } = req.body
+     const {id} = req.user
 
-        const isValid = await verifyJWT(token)
-       
-      if(!isValid){
-      return  res.status(400).json({success:false,message:"invalid token"})
+        const {title,description,draft} = req.body
 
-      }
-
-
-        const {title,description,creator,draft} = req.body
-
-        const user = await User.findById(creator)
+        const user = await User.findById(id)
 
         if(!title || !description ){
             return res.status(400).json({success:false,message:"please all the required field"})
         }
 
-        if(!creator){
+        if(!user){
             return res.status(400).json({success:false,message:"creator dosenot exist"})
         }
 
         
         
-        const blog = await Blog.create({title,description,draft,creator})
+        const blog = await Blog.create({title,description,draft})
         
-        await User.findByIdAndUpdate(creator,{$push :{ blogs : blog._id}})
+        await User.findByIdAndUpdate(id,{$push :{ blogs : blog._id}})
 
-        res.status(200).json({success:true,message:"successfully created the blog",blog})
+        return res.status(200).json({success:true,message:"successfully created the blog",blog})
         
     } catch (error) {
 
-        res.status(500).json({success:false,message:error.message})
+     return   res.status(500).json({ success: false, message: 'Server Error' });
 
      
     }

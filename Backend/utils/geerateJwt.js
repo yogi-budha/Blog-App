@@ -16,6 +16,7 @@ import jwt from 'jsonwebtoken'
 
 const verifyJWT = async (token) => {
     try {
+
     const user =  await jwt.verify(token,"secreatKey")
   
         return user

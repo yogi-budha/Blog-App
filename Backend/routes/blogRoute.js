@@ -8,7 +8,7 @@ const blogRoute = express.Router()
 blogRoute.post("/blog",verify,createBlog)
 blogRoute.get("/blog",getBlogs)
 blogRoute.get("/blog/:id",getBlog)
-blogRoute.patch("/blog/:id",updateBlog)
-blogRoute.delete("/blog/:id",deleteBlog)
+blogRoute.patch("/blog/:id",verify,updateBlog)
+blogRoute.delete("/blog/:id",verify,deleteBlog)
 
 export default blogRoute

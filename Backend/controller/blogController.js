@@ -1,13 +1,12 @@
 import { Blog } from "../models/blogModel.js"
 import { User } from "../models/userModel.js"
-import {  decodeJwt, verifyJWT } from "../utils/geerateJwt.js"
 
 
 const createBlog = async (req,res)=>{
     try {
 
      const {id} = req.user
-
+console.log(id)
         const {title,description,draft} = req.body
 
         const user = await User.findById(id)
@@ -22,7 +21,7 @@ const createBlog = async (req,res)=>{
 
         
         
-        const blog = await Blog.create({title,description,draft})
+        const blog = await Blog.create({title,description,draft,creator:user._id})
         
         await User.findByIdAndUpdate(id,{$push :{ blogs : blog._id}})
 
@@ -89,8 +88,16 @@ const updateBlog = async (req,res)=>{
     try {
 
         const {id} = req.params
+        const user_id = req.user
 
         const {title,description,draft} = req.body
+
+       const blogId = await Blog.findById(id)
+
+
+        if(!(blogId.creator==user_id.id)){
+         return   res.status(400).json({success:false,message:"you are not authorized to update"})
+        }
 
         const blog = await Blog.findByIdAndUpdate(id,{title,description,draft},{new:true})
 
@@ -116,15 +123,33 @@ const deleteBlog = async (req,res)=>{
 
         const {id} = req.params
 
-        const blog = await Blog.findByIdAndDelete(id)
+        const user = req.user
 
-        if(!blog){
+        const blogss = await Blog.findById(id)
+        console.log("first")
+
+        if(!blogss){
             
-            res.status(400).json({success:false,message:"Blog Not found"})
-            }
+            return res.status(400).json({success:false,message:"blog not found"})
+        }
+
+        if(user.id != blogss.creator){
+            return res.status(400).json({success:false,message:"you are unauthorized"})
+        }
+
+
+
+
+        
+
+        await User.findByIdAndUpdate(user.id,{$pull :{blogs:id}})
+  await Blog.findByIdAndDelete(id)
+
+
+
 
             
-        res.status(200).json({success:true,message:"successfully delete the blog",blog})
+        res.status(200).json({success:true,message:"successfully delete the blog"})
 
         
     } catch (error) {

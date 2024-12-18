@@ -14,11 +14,28 @@ const blogSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    image:{
+        type:String,
+        required:true
+    },
+    imageId:{
+        type:String,
+        required:true
+    },
 
     creator:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
-    }
+    },
+
+    likes:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User'
+    }],
+    comment:[{
+          type:mongoose.Schema.Types.ObjectId,
+        ref:'Comment'
+    }]
 
 },{timestamps:true})
 

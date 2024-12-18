@@ -3,9 +3,9 @@ import { createUser, deleteUser, getsingleuser, getusers, login, updateUser } fr
 
 const userRoute = express.Router()
 
-userRoute.post("/user",createUser)
+userRoute.post("/signup",createUser)
 userRoute.get("/users",getusers)
-userRoute.post("/user/login",login)
+userRoute.post("/login",login)
 userRoute.get("/user/:id",getsingleuser)
 userRoute.patch("/user/:id",updateUser)
 userRoute.post("/user/:id",deleteUser)

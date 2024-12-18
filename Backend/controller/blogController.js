@@ -1,13 +1,20 @@
 import { Blog } from "../models/blogModel.js"
+import  { Comment } from "../models/commentModel.js"
 import { User } from "../models/userModel.js"
+import uploadimage, { deleteimage } from "../utils/cloudinary.js"
+import upload from "../utils/multer.js"
+
+import fs from 'fs'
 
 
 const createBlog = async (req,res)=>{
     try {
 
      const {id} = req.user
-console.log(id)
+
         const {title,description,draft} = req.body
+
+        const blogImage = req.file
 
         const user = await User.findById(id)
 
@@ -18,18 +25,24 @@ console.log(id)
         if(!user){
             return res.status(400).json({success:false,message:"creator dosenot exist"})
         }
+        if(!blogImage){
+            return res.status(400).json({success:false,message:"please fill  the image"})
+        }
+
+        const {secure_url,public_id} = await uploadimage(req.file.path)
+
+        fs.unlinkSync(req.file.path)
 
         
-        
-        const blog = await Blog.create({title,description,draft,creator:user._id})
+        const blog = await Blog.create({title,description,draft,creator:user._id,image:secure_url,imageId:public_id})
         
         await User.findByIdAndUpdate(id,{$push :{ blogs : blog._id}})
 
         return res.status(200).json({success:true,message:"successfully created the blog",blog})
         
     } catch (error) {
-
-     return   res.status(500).json({ success: false, message: 'Server Error' });
+        console.log(error)
+     return   res.status(500).json({ success: false, message: error.message });
 
      
     }
@@ -140,8 +153,8 @@ const deleteBlog = async (req,res)=>{
 
 
 
+        await deleteimage(blogss.imageId)
         
-
         await User.findByIdAndUpdate(user.id,{$pull :{blogs:id}})
   await Blog.findByIdAndDelete(id)
 
@@ -159,6 +172,49 @@ const deleteBlog = async (req,res)=>{
 
 }
 
+const likeBlog = async (req,res) => {
+    try {
+
+        const blogId = req.params
+
+        const {id} = req.user
+
+        console.log(id)
+
+        const blog = await Blog.findById(blogId.id)
+
+        if(!blog){
+           return res.status(400).json({success:false,message:"blog NOt found"})
+        }
+
+        console.log(blog.likes)
+        console.log(blog.likes.includes(id))
+        if(blog.likes.includes(id)){
+
+            
+            await Blog.findByIdAndUpdate(blogId.id,{$pull:{likes:id}})
+            
+        return res.status(200).json({success:true,message:"user dislike Blog"})
+        }else{
+            await Blog.findByIdAndUpdate(blogId.id,{$push:{likes:id}})
+        return res.status(200).json({success:true,message:"user like Blog"})
+        }
 
 
-export {createBlog,getBlog,getBlogs,updateBlog,deleteBlog}
+
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({success:false,message:"internal server error"})  
+    }
+}
+
+
+
+
+
+
+
+
+
+export {createBlog,getBlog,getBlogs,updateBlog,deleteBlog,likeBlog}

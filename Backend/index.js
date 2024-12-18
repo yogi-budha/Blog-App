@@ -3,6 +3,7 @@ import userRoute from './routes/userRoute.js'
 import dbConnect from './config/dbConnect.js'
 import blogRoute from './routes/blogRoute.js'
 import cors from 'cors'
+import cloudnaryconfig from './config/cloudnaryconfig.js'
 
 const app = express()
 
@@ -17,6 +18,7 @@ app.use("/api/v1",blogRoute)
 app.listen(3000, () => {
     
     dbConnect()
+    cloudnaryconfig()
     console.log('listening on port 3000')
 
 })

@@ -105,6 +105,14 @@ const getusers = async (req,res) => {
         
         const users = await User.find()
 
+        if(!users){
+            res.status(400).json({
+                success:false,
+                message:"user not found",
+                users
+            })
+        }
+
          res.status(200).json({
             success:true,
             message:"user fetched Successfully",
@@ -196,5 +204,6 @@ const deleteUser = async (req,res) =>{
         
     }
 }
+
 
 export {createUser,getusers,getsingleuser,updateUser,deleteUser,login}

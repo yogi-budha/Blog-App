@@ -1,24 +1,21 @@
 
 import { Route, Routes } from 'react-router-dom'
-import CreateBlog from './Components/CreateBlog'
-import SignIn from './Pages/signIn'
-import SignUp from './Pages/SignUp'
-import Blog from './Components/Blog'
-import Logout from './Pages/Logout'
+import AuthForm from './Pages/AuthForm'
+import NavBar from './Components/NavBar'
+import Home from './Components/Home'
 
 function App() {
 
-  const token = localStorage.getItem("token")
   return (
 
-    <div className='bg-slate-800 w-full min-h-screen'>
+    <div className='  w-full min-h-screen '>
          <Routes>
-      <Route path= "/" element={<Blog/>}/>
-      <Route path= "/signup" element={<SignUp token={token}/>}/>
-      <Route path= "/signin" element={<SignIn token={token}/>}/>
-      <Route path= "/createBlog" element={<CreateBlog/>}/>
-      <Route path= "/logout" element={<Logout/>}/>
-      <Route path= "*" element={<h1> NOT FOUND</h1>}/>
+      <Route path= "/" element={<NavBar/>}>
+        <Route path= "/" element={<Home/>}/>
+     <Route path='/signup' element={<AuthForm type={"signup"}/>}/>
+     <Route path='/login' element={<AuthForm type={"login"}/>}/>
+      </Route>
+    
 
     </Routes>
     </div>
